@@ -51,6 +51,15 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => fitN
 addEventListener('resize', () => fitName());
 addEventListener('orientationchange', () => setTimeout(() => fitName(true), 250));
 
+/* ------------------------------------------------ the hero line fills with petrol blue as you scroll down */
+const sdown = $('.sdown'), sfill = $('.sline', sdown);
+function heroLine() {
+  const y = window.scrollY || document.documentElement.scrollTop, span = Math.max(1, ($('#hero').offsetHeight || VH()) * .85);
+  sfill.style.setProperty('--p', clamp(y / span, 0, 1).toFixed(3));
+  sdown.classList.toggle('idle', y < 8);                       // a small glint invites the first scroll, then the line just fills
+}
+addEventListener('scroll', heroLine, { passive: true }); addEventListener('resize', heroLine); heroLine();
+
 /* ------------------------------------------------ about paragraph: words light up with scroll */
 const para = $('#para');
 para.innerHTML = para.textContent.trim().split(/\s+/).map(w => `<span class="w">${w}</span>`).join(' ');

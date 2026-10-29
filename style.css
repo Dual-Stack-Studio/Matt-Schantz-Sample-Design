@@ -64,9 +64,12 @@ main{position:relative;z-index:1}
 .hero-photo .tint{position:absolute;inset:0;background:radial-gradient(ellipse 34% 40% at 0% 100%,rgba(4,9,12,.92),transparent 100%),linear-gradient(180deg,rgba(6,11,14,.62),rgba(6,11,14,.04) 40%,rgba(6,11,14,.3))}
 .hero-photo .tint::after{content:'';position:absolute;inset:0;background:rgba(58,160,189,.34);mix-blend-mode:soft-light}
 .hero-foot{position:relative;z-index:4;display:flex;flex-direction:column;align-items:flex-start;gap:22px}
-.sdown{display:flex;align-items:center;gap:12px;font:500 clamp(26px,3.6vw,52px)/1 var(--jost);letter-spacing:-.03em}
-.sdown i{display:grid;place-items:center;width:.62em;height:.62em;border-radius:50%;background:#fff;color:#000}
-.sdown svg{width:46%;height:46%;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.sdown{display:flex;flex-direction:column;align-items:center;width:14px;margin-top:6px;cursor:pointer}
+.sline{position:relative;display:block;width:2px;height:clamp(76px,12vh,128px);background:rgba(205,226,236,.16);overflow:hidden}
+.sline i{display:block;width:100%;height:100%;background:linear-gradient(180deg,#2a5566 0%,#3aa0bd 66%,#8fdcf0 100%);clip-path:inset(0 0 calc((1 - var(--p,0))*100%) 0);filter:drop-shadow(0 0 5px rgba(58,160,189,.9))}
+.sline::after{content:'';position:absolute;left:0;top:0;width:100%;height:38%;background:linear-gradient(180deg,transparent,rgba(143,220,240,.95),transparent);transform:translateY(-110%);opacity:0}
+.sdown.idle .sline::after{opacity:1;animation:sglint 2.4s var(--ease) infinite}
+@keyframes sglint{to{transform:translateY(290%)}}
 .hero-foot p{max-width:calc(clamp(16px,24vw,380px) - var(--pad) - 18px);min-width:150px;text-align:left;font:400 13px/1.45 var(--jost);color:#d1dade}
 
 /* about */
@@ -429,7 +432,7 @@ main{position:relative;z-index:1}
   .ph{grid-template-columns:40px 1fr}.ph .pm,.ph .po{display:none}
   .zrow .fig{width:92vw !important}.zrow.l,.zrow.r{justify-content:center;padding:0 14px}
 }
-@media (prefers-reduced-motion:reduce){.grain{animation:none}.mq .trk{animation:none}.flow .slide{transition-duration:.01s}}
+@media (prefers-reduced-motion:reduce){.sdown.idle .sline::after{animation:none;opacity:0}.grain{animation:none}.mq .trk{animation:none}.flow .slide{transition-duration:.01s}}
 
 
 /* ===== contact popup ===== */
