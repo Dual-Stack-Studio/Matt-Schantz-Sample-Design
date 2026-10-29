@@ -444,7 +444,14 @@ new IntersectionObserver(es => es.forEach(e => { wVis = e.isIntersecting; })).ob
 (async () => {
   try {
     const idx = await (await fetch(A('writings/index.json'))).json();
-    const items = await Promise.all(idx.map(async slug => ({ slug, ...parseMd(await (await fetch(A(`writings/${slug}.md`))).text()) })));
+    const items = (await Promise.all(idx.map(async slug => {
+      try {
+        const r = await fetch(A(`writings/${slug}.md`));
+        const txt = await r.text();
+        if (!r.ok || /^\s*<(!doctype|html)/i.test(txt)) return null;            // a missing file comes back as an HTML error page: skip it
+        return { slug, ...parseMd(txt) };
+      } catch (e) { return null; }
+    }))).filter(Boolean);
     WR = items.sort((a, b) => (b.meta.date || '').localeCompare(a.meta.date || ''));
   } catch (e) { console.warn('Writings could not be loaded', e); }
   buildWriting();
