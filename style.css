@@ -236,7 +236,7 @@ main{position:relative;z-index:1}
 .widx li::before{content:'';position:absolute;left:0;bottom:-1px;height:1px;width:100%;background:var(--teal);transform:scaleX(0);transform-origin:left;transition:transform .9s var(--out)}
 .widx li.on::before{transform:scaleX(1)}
 .widx .n{padding-top:1.1em;font:500 11px/1 var(--jost);letter-spacing:.2em;color:var(--teal)}
-.widx .t{font:italic 400 clamp(40px,7.4vw,124px)/.98 var(--serif);letter-spacing:-.03em;font-optical-sizing:auto;color:rgba(205,226,236,.3);transition:color .6s,transform .8s var(--out)}
+.widx .t{font:italic 400 clamp(30px,4.6vw,76px)/1.02 var(--serif);letter-spacing:-.03em;font-optical-sizing:auto;color:rgba(205,226,236,.3);transition:color .6s,transform .8s var(--out)}
 .widx li:hover .t{color:rgba(205,226,236,.7)}
 .widx li.on .t{color:#fff;transform:translateX(clamp(6px,1vw,16px))}
 .wx{display:grid;grid-template-rows:0fr;transition:grid-template-rows .8s var(--out)}
