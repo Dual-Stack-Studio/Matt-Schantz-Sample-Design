@@ -684,3 +684,30 @@ html{overflow-x:hidden}
 /* gallery on tablets and phones */
 @media (max-width:900px){.mosaic{--gv:clamp(20px,5vw,44px);--gg:clamp(12px,3vw,24px)}}
 .mosaic[data-cols="1"] .fig.mt:nth-child(even){width:84%;margin-left:auto}
+
+
+/* ===== theme switch: a small pill whose thumb turns from moon to sun ===== */
+.thm{position:relative;flex:none;display:inline-block;width:54px;height:28px;padding:0;margin:0 2px;color:inherit;border:1.2px solid currentColor;border-radius:99px;opacity:.88;cursor:pointer;transition:opacity .3s,transform .5s var(--out)}
+.thm::before{content:'';position:absolute;inset:-9px -5px}
+.thm:hover,.thm:focus-visible{opacity:1}
+.thm:active{transform:scale(.94)}
+.thm .tk{position:absolute;left:3px;top:50%;width:20px;height:20px;margin-top:-10px;transition:transform .8s var(--out)}
+.thm .tk svg{display:block;width:100%;height:100%;overflow:visible}
+.thm .cut{transition:transform .8s var(--out)}
+.thm .rays{transform-origin:12px 12px;transform:rotate(-100deg) scale(.35);opacity:0;transition:transform .9s var(--out),opacity .45s}
+.thm .sp{position:absolute;top:50%;width:2px;height:2px;margin-top:-1px;border-radius:50%;background:currentColor;transition:opacity .5s,transform .8s var(--out)}
+.thm .sp:nth-of-type(1){right:9px;margin-top:-6px;animation:twinkle 3.2s ease-in-out infinite}
+.thm .sp:nth-of-type(2){right:16px;margin-top:3px;width:1.5px;height:1.5px;animation:twinkle 3.2s 1.1s ease-in-out infinite}
+.thm .sp:nth-of-type(3){left:10px;margin-top:-5px;opacity:0;transform:scale(.2)}
+.thm .sp:nth-of-type(4){left:17px;margin-top:5px;width:1.5px;height:1.5px;opacity:0;transform:scale(.2)}
+@keyframes twinkle{0%,100%{opacity:.25}50%{opacity:1}}
+html[data-theme="light"] .thm .tk{transform:translateX(26px)}
+html[data-theme="light"] .thm .cut{transform:translate(15px,-15px)}
+html[data-theme="light"] .thm .rays{transform:none;opacity:1}
+html[data-theme="light"] .thm .sp:nth-of-type(1),html[data-theme="light"] .thm .sp:nth-of-type(2){animation:none;opacity:0;transform:scale(.2)}
+html[data-theme="light"] .thm .sp:nth-of-type(3),html[data-theme="light"] .thm .sp:nth-of-type(4){opacity:.8;transform:none}
+.thm-o{position:fixed;z-index:99;top:23px;right:calc(var(--pad) + 176px);color:var(--ink)}
+@media (hover:none),(pointer:coarse){.thm-o{right:calc(var(--pad) + 176px)}}
+@media (max-width:560px){.thm-o{right:calc(var(--pad) + 168px)}}
+@media (prefers-reduced-motion:reduce){.thm .tk,.thm .cut,.thm .rays{transition-duration:.01s}.thm .sp{animation:none!important}}
+.cta .ph-light{display:none}

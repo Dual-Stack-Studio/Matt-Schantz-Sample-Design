@@ -94,6 +94,45 @@ $$('a', menu).forEach(a => a.addEventListener('click', e => {
 addEventListener('keydown', e => { if (e.key === 'Escape' && root.classList.contains('menu-open')) menuSet(false); });
 addEventListener('resize', () => { if (innerWidth > 640 && root.classList.contains('menu-open')) menuSet(false); });
 
+/* ------------------------------------------------ dark / light: swap the stylesheet in place, revealed in a circle from the button */
+const thmBtns = $$('.thm'), THEME_META = { dark: '#060b0e', light: '#e8ecea' };
+let themeLink = $('#theme'), themeBusy = false;
+function themeUI(t) {
+  root.dataset.theme = t;
+  thmBtns.forEach(b => { b.setAttribute('aria-pressed', t === 'light' ? 'true' : 'false'); b.setAttribute('aria-label', t === 'light' ? 'Switch to the dark version' : 'Switch to the light version'); });
+  const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = THEME_META[t];
+}
+function loadSheet(t) {
+  return new Promise(res => {
+    const l = document.createElement('link');
+    l.rel = 'stylesheet'; l.href = themeLink.href.replace(/(style|light)\.css/, t === 'light' ? 'light.css' : 'style.css');
+    l.onload = l.onerror = () => { themeLink.remove(); l.id = 'theme'; themeLink = l; res(); };
+    themeLink.after(l);                                        // it comes later in the document, so it wins while both are present
+  });
+}
+const warmFooterPhotos = () => $$('.cta img').forEach(i => { const p = new Image(); p.src = i.currentSrc || i.src; });
+async function switchTheme(next, x, y) {
+  if (themeBusy || next === root.dataset.theme) return;
+  themeBusy = true;
+  try { localStorage.setItem('mattTheme', next); } catch (e) {}
+  warmFooterPhotos();
+  const run = async () => { await loadSheet(next); themeUI(next); };
+  if (!document.startViewTransition || reduce) { await run(); themeBusy = false; return; }
+  const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+  const vt = document.startViewTransition(run);
+  try {
+    await vt.ready;
+    root.animate({ clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] }, { duration: 1100, easing: 'cubic-bezier(.65,0,.2,1)', pseudoElement: '::view-transition-new(root)' });
+    await vt.finished;
+  } catch (e) {}
+  themeBusy = false;
+}
+themeUI(root.dataset.theme === 'light' ? 'light' : 'dark');
+thmBtns.forEach(b => {
+  b.addEventListener('pointerenter', warmFooterPhotos, { once: true });
+  b.addEventListener('click', () => { const r = b.getBoundingClientRect(); switchTheme(root.dataset.theme === 'light' ? 'dark' : 'light', r.left + r.width / 2, r.top + r.height / 2); });
+});
+
 /* ------------------------------------------------ about paragraph: words light up with scroll */
 const para = $('#para');
 para.innerHTML = para.textContent.trim().split(/\s+/).map(w => `<span class="w">${w}</span>`).join(' ');

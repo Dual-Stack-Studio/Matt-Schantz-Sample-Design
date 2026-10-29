@@ -10,6 +10,8 @@
 <script>document.documentElement.classList.add("is-loading")</script>
 <link rel="preload" as="image" href="assets/matt/home/hero.jpg" fetchpriority="high">
 <style>/* loading screen: inline so it is styled even when a cached style.css is older than this page */
+::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
+::view-transition-old(root){z-index:1}::view-transition-new(root){z-index:2}
 #loader{display:none}
 .is-loading #loader,#loader.out{display:grid}
 html.is-loading,html.is-loading body{overflow:hidden}
@@ -28,7 +30,12 @@ html.is-loading,html.is-loading body{overflow:hidden}
 #loader.out .lnote{opacity:0}
 @media (prefers-reduced-motion:reduce){#loader .lmark{animation:none}#loader{transition:opacity .5s}#loader.out{transform:none;opacity:0}}
 </style>
-<link rel="stylesheet" href="style.css?v=20261030j">
+<meta name="theme-color" content="#060b0e">
+<script>(function(){var t='dark';try{var q=/[?&]theme=(light|dark)/.exec(location.search);t=q?q[1]:(localStorage.getItem('mattTheme')||'dark');if(q)localStorage.setItem('mattTheme',t)}catch(e){}
+if(t!=='light')t='dark';document.documentElement.dataset.theme=t;
+if(t==='light')document.querySelector('meta[name="theme-color"]').content='#e8ecea';
+document.write('<link rel="stylesheet" id="theme" href="'+(t==='light'?'light':'style')+'.css?v=20261030k">')})()</script>
+<noscript><link rel="stylesheet" href="style.css?v=20261030k"></noscript>
 </head>
 <body>
 <div id="loader" role="status" aria-live="polite" aria-label="Loading">
@@ -50,6 +57,7 @@ html.is-loading,html.is-loading body{overflow:hidden}
     <a href="#about">About</a><a href="#portfolio">Photography</a><a href="#film">Videos</a><a href="#writing">Writing</a><a href="#contact">Contact</a>
     <a class="hello" href="#contact" data-contact>Say hello</a>
     <button class="snd" id="snd" type="button" aria-label="Turn the music on" aria-pressed="false" data-state="idle"><i></i><i></i><i></i><i></i></button>
+    <button class="thm" type="button" aria-label="Switch to the light version" aria-pressed="false"><span class="tk"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><mask id="thmA"><rect x="-8" y="-8" width="40" height="40" fill="#fff"/><circle class="cut" cx="17" cy="8" r="7" fill="#000"/></mask></defs><circle cx="12" cy="12" r="6.2" fill="currentColor" mask="url(#thmA)"/><g class="rays" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 1.6v2.6M12 19.8v2.6M1.6 12h2.6M19.8 12h2.6M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8"/></g></svg></span><i class="sp"></i><i class="sp"></i><i class="sp"></i><i class="sp"></i></button>
     <button class="burger" id="burger" type="button" aria-label="Open the menu" aria-expanded="false" aria-controls="menu"><i></i><i></i></button>
   </nav>
 </header>
@@ -157,7 +165,8 @@ html.is-loading,html.is-loading body{overflow:hidden}
         <div class="legal"><span>&copy; 2026 Matt Schantz. Redesign sample with temporary material from mattschantz.com.</span><span class="credit">Designed and built by Dual-Stack Studio</span><span>Privacy Policy</span></div>
       </div>
       <figure class="cta" data-contact tabindex="0" role="button" aria-label="Send me a message">
-        <img src="assets/mid/steamboat-springs-03.jpg" alt="" loading="lazy" decoding="async">
+        <img class="ph-dark" src="assets/mid/steamboat-springs-03.jpg" alt="" loading="lazy" decoding="async">
+        <img class="ph-light" src="assets/mid/grand-teton-national-park-102824-04.jpg" alt="" loading="lazy" decoding="async">
         <figcaption>A road, a place, a story.<b>Pull over, say hello.</b></figcaption>
       </figure>
     </div>
@@ -215,6 +224,7 @@ html.is-loading,html.is-loading body{overflow:hidden}
   <div class="rprog" id="rprog"></div>
   <button class="close" id="rclose" type="button" aria-label="Close piece"><span>Close</span><i></i></button>
   <button class="snd snd-o" type="button" aria-label="Turn the music on" aria-pressed="false" data-state="idle"><i></i><i></i><i></i><i></i></button>
+  <button class="thm thm-o" type="button" aria-label="Switch to the light version" aria-pressed="false"><span class="tk"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><mask id="thmB"><rect x="-8" y="-8" width="40" height="40" fill="#fff"/><circle class="cut" cx="17" cy="8" r="7" fill="#000"/></mask></defs><circle cx="12" cy="12" r="6.2" fill="currentColor" mask="url(#thmB)"/><g class="rays" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 1.6v2.6M12 19.8v2.6M1.6 12h2.6M19.8 12h2.6M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8"/></g></svg></span><i class="sp"></i><i class="sp"></i><i class="sp"></i><i class="sp"></i></button>
   <div class="rwrap" id="rwrap"></div>
 </div>
 
@@ -230,12 +240,13 @@ html.is-loading,html.is-loading body{overflow:hidden}
   <div class="dprog" id="dprog"></div>
   <button class="close" id="close" type="button" aria-label="Close project"><span>Close</span><i></i></button>
   <button class="snd snd-o" type="button" aria-label="Turn the music on" aria-pressed="false" data-state="idle"><i></i><i></i><i></i><i></i></button>
+  <button class="thm thm-o" type="button" aria-label="Switch to the light version" aria-pressed="false"><span class="tk"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><mask id="thmC"><rect x="-8" y="-8" width="40" height="40" fill="#fff"/><circle class="cut" cx="17" cy="8" r="7" fill="#000"/></mask></defs><circle cx="12" cy="12" r="6.2" fill="currentColor" mask="url(#thmC)"/><g class="rays" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 1.6v2.6M12 19.8v2.6M1.6 12h2.6M19.8 12h2.6M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8"/></g></svg></span><i class="sp"></i><i class="sp"></i><i class="sp"></i><i class="sp"></i></button>
   <div class="dwrap" id="dwrap"></div>
 </div>
 
-<script src="manifest.js?v=20261030j"></script>
-<script src="data.js?v=20261030j"></script>
-<script src="cms-config.js?v=20261030j"></script>
-<script src="cms.js?v=20261030j"></script>
+<script src="manifest.js?v=20261030k"></script>
+<script src="data.js?v=20261030k"></script>
+<script src="cms-config.js?v=20261030k"></script>
+<script src="cms.js?v=20261030k"></script>
 </body>
 </html>
