@@ -8,6 +8,7 @@ const VW = () => document.documentElement.clientWidth || window.innerWidth;
 const VH = () => document.documentElement.clientHeight || window.innerHeight;
 const touch = matchMedia('(hover: none)').matches;
 const A = p => 'assets/' + p;
+const mid = src => 'mid/' + src.replace(/^matt\//, '').replace('/', '-');       // 1200 px copy: carousel and mosaic use it, the lightbox and the project header use the full file
 const MAN = window.MAN || {};
 const ratio = p => { const m = MAN[p]; return m ? m[0] / m[1] : 1.5; };
 const P = window.PROJECTS, V = window.VIDEOS;
@@ -63,8 +64,8 @@ pstage.style.setProperty('--ar', '16/10'); pstage.style.setProperty('--sh', '64%
 pstage.style.setProperty('--rot', '22'); pstage.style.setProperty('--depth', '190'); pstage.style.setProperty('--every', EVERY + 'ms');
 const hbox = h('div', 'halos'), rail = h('div', 'rail'), ctl = h('div', 'ctl'), dots = h('div', 'dots');
 P.forEach((p, k) => {
-  const hd = h('div', 'halo'); hd.style.backgroundImage = `url(${A(p.cover)})`; halos.push(hd); hbox.append(hd);
-  const s = h('div', 'slide', `<img src="${A(p.cover)}" alt="${p.title}" draggable="false"><div class="cl"><b>${p.n}</b><span>${p.title}</span><i>${p.sub}</i></div>`);
+  const hd = h('div', 'halo'); hd.style.backgroundImage = `url(${A(mid(p.cover))})`; halos.push(hd); hbox.append(hd);
+  const s = h('div', 'slide', `<img src="${A(mid(p.cover))}" alt="${p.title}" draggable="false" decoding="async"><div class="cl"><b>${p.n}</b><span>${p.title}</span><i>${p.sub}</i></div>`);
   s.addEventListener('click', () => { if (performance.now() - (rail._swiped || 0) < 450) return; if (+s.dataset.d === 0) openProject(k); else go(k, true); });
   slides.push(s); rail.append(s);
   dotEls.push(dots.appendChild(h('i')));
@@ -189,7 +190,7 @@ $$('.cy').forEach((el, i) => {
   let front = a, back = b, cur = null, vis = false;
   const full = el.dataset.full === '1', period = +el.dataset.cy || 5200;
   function swap(first) {
-    const src = pickPhoto(), url = A(full ? src : thumb(src)), im = new Image();
+    const src = pickPhoto(), url = A(full ? mid(src) : thumb(src)), im = new Image();
     im.onload = () => {
       if (cur) shown.delete(cur);
       cur = src; shown.add(src);
@@ -236,7 +237,7 @@ try { localStorage.removeItem('sound'); } catch (e) {}           // an old "mute
 const store = (k, v) => { try { v === undefined ? sessionStorage.removeItem(k) : sessionStorage.setItem(k, v); } catch (e) {} };   // a mute lasts for this visit only
 const stored = () => { try { return sessionStorage.getItem('sound'); } catch (e) { return null; } };
 const pa = new Audio(SND.src), pb = new Audio(SND.src);
-[pa, pb].forEach(a => { a.preload = 'auto'; a.playsInline = true; });
+[pa, pb].forEach(a => { a.preload = 'none'; a.playsInline = true; });   // nothing is downloaded until the site is ready, so the music never competes with the photos
 let sc = pa, sn = pb;                                           // current and next player (they overlap a few seconds to loop without a gap)
 const AC = window.AudioContext || window.webkitAudioContext;
 const iOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -293,10 +294,10 @@ snd.addEventListener('click', e => {
 });
 if (stored() === 'off') setSnd('off');
 else {
-  soundOn(false);                                                // works if the browser allows autoplay
+  (window.siteReady || Promise.resolve()).then(() => soundOn(false));   // works if the browser allows autoplay
   const gestures = ['pointerdown', 'touchend', 'keydown', 'click'];
   const first = async e => {
-    if (snd.contains(e.target) || sndState !== 'idle' || sndTrying) return;
+    if (!window.__ready || snd.contains(e.target) || sndState !== 'idle' || sndTrying) return;
     sndTrying = true;
     const done = await soundOn(false);
     sndTrying = false;
@@ -313,6 +314,12 @@ new MutationObserver(() => {                                     // music steps 
   if (open && sndState === 'on') { sndDucked = true; setSnd('off'); fadeSound(0, 500); }
   else if (!open && sndDucked) { sndDucked = false; soundOn(false); }
 }).observe($('#vmodal'), { attributes: true, attributeFilter: ['class'] });
+
+/* ------------------------------------------------ once the site is ready, quietly fetch the heavy files so opening a project is instant */
+(window.siteReady || Promise.resolve()).then(() => {
+  const idle = window.requestIdleCallback || (f => setTimeout(f, 1200));
+  idle(() => { P.forEach((p, k) => setTimeout(() => { new Image().src = A(p.cover); }, k * 700)); }, { timeout: 4000 });
+});
 
 /* ------------------------------------------------ contact popup */
 const cmodal = $('#contactModal'), cform = $('#cform'), cpanel = $('.cpanel', cmodal), CFG = window.CONTACT || {};
@@ -570,7 +577,7 @@ function buildMosaic(p) {
         const it = chunk[at], gi = b + at;
         const fig = h('figure', 'fig mt');
         fig.style.flexGrow = ((1 / ratio(it.src)) * W[k % W.length]).toFixed(3); k++;
-        fig.innerHTML = `<div class="m"><img src="${A(it.src)}" alt="${it.cap || ''}" loading="lazy"></div><figcaption><b>${pad(gi + 1)}</b>${it.cap ? '<span>' + it.cap + '</span>' : ''}</figcaption>`;
+        fig.innerHTML = `<div class="m"><img src="${A(mid(it.src))}" alt="${it.cap || ''}" loading="lazy" decoding="async"></div><figcaption><b>${pad(gi + 1)}</b>${it.cap ? '<span>' + it.cap + '</span>' : ''}</figcaption>`;
         fig.addEventListener('click', () => lbOpen(imgs, gi));
         col.append(fig);
       }
@@ -612,8 +619,9 @@ async function openProject(idx) {
   busy = true; paused = true; stop();
   const p = P[idx], r = slides[idx].getBoundingClientRect();
   const m = h('div', 'morph');
-  m.style.cssText = `left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px;border-radius:0;background-image:url(${A(p.cover)})`;
+  m.style.cssText = `left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px;border-radius:0;background-image:url(${A(mid(p.cover))})`;
   document.body.append(m);
+  new Image().src = A(p.cover);                                   // the big header image starts downloading right away
   detail.scrollTop = 0; st = 0; buildDetail(idx);
   document.documentElement.classList.add('lock');
   void m.offsetWidth;

@@ -7,9 +7,20 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;1,500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Oswald:wght@500;600&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add("is-loading")</script>
+<link rel="preload" as="image" href="assets/matt/home/hero.jpg" fetchpriority="high">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div id="loader" role="status" aria-live="polite" aria-label="Loading">
+  <div class="lin">
+    <svg class="lmark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1l2.2 8.8L23 12l-8.8 2.2L12 23l-2.2-8.8L1 12l8.8-2.2z"/></svg>
+    <span class="lname">Matt Schantz</span>
+    <span class="lbar"><i></i></span>
+    <span class="lpct" aria-hidden="true">00</span>
+  </div>
+  <span class="lnote">Loading the photographs</span>
+</div>
 <div class="grain" aria-hidden="true"></div>
 <div class="cur" id="cur" aria-hidden="true"><span id="curLabel"></span></div>
 <div class="vline" aria-hidden="true"></div>
@@ -27,7 +38,7 @@
   <!-- hero -->
   <section class="hero" id="hero">
     <h1 class="name" id="name"><span class="ln"><span>Matt</span></span><span class="ln"><span id="nameFit">Schantz</span></span></h1>
-    <figure class="hero-photo" data-par=".06"><img src="assets/matt/home/hero.jpg" alt="Matt Schantz"><span class="tint"></span></figure>
+    <figure class="hero-photo" data-par=".06"><img src="assets/matt/home/hero.jpg" alt="Matt Schantz" fetchpriority="high" decoding="async"><span class="tint"></span></figure>
     <div class="hero-foot">
       <p>Where the road meets the light. &mdash;<br>National parks, wildlife and quiet places, photographed and filmed on the way.</p>
       <a class="sdown" href="#about"><i><svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4M2 7.5l4 4 4-4"/></svg></i>scroll down</a>
@@ -182,6 +193,7 @@
 
 <script src="manifest.js"></script>
 <script src="data.js"></script>
+<script src="loader.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
