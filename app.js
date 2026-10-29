@@ -82,6 +82,7 @@ const arrow = dir => {
 };
 ctl.append(arrow(-1), dots, arrow(1));
 pstage.append(hbox, rail, ctl);
+let capTimer = 0;
 const dOf = k => { let d = ((k - cur) % n + n) % n; if (d > n / 2) d -= n; return d; };
 function render(first) {
   slides.forEach((s, k) => {
@@ -96,10 +97,15 @@ function render(first) {
   halos.forEach((x, k) => x.classList.toggle('on', k === cur));
   pillEls.forEach((x, k) => x.classList.toggle('on', k === cur));
   dotEls.forEach((x, k) => { const was = x.classList.contains('on'); x.classList.toggle('on', k === cur); if (k === cur && was) { x.classList.remove('on'); void x.offsetWidth; x.classList.add('on'); } });
-  const p = P[cur];
-  cap.box.classList.remove('sw'); void cap.box.offsetWidth; cap.box.classList.add('sw');
-  cap.n.textContent = p.n; cap.t.firstChild.nodeValue = p.title; cap.s.textContent = p.sub;
-  cap.m.textContent = `${p.year} · ${imgsOf(p).length} photographs`;
+  // the title leaves as the card starts to move, the new one arrives staggered while the card settles
+  const setCap = () => {
+    const p = P[cur];
+    cap.n.textContent = p.n; cap.t.firstChild.nodeValue = p.title; cap.s.textContent = p.sub;
+    cap.m.textContent = `${p.year} · ${imgsOf(p).length} photographs`;
+    cap.box.classList.remove('out', 'sw'); void cap.box.offsetWidth; cap.box.classList.add('sw');
+  };
+  clearTimeout(capTimer);
+  if (first || reduce) setCap(); else { cap.box.classList.remove('sw'); cap.box.classList.add('out'); capTimer = setTimeout(setCap, 340); }
 }
 function go(k, user) { cur = ((k % n) + n) % n; render(); if (user && timer) { stop(); start(); } }
 function start() { if (timer || paused) return; timer = setInterval(() => go(cur + 1), EVERY); pf.classList.remove('paused'); }

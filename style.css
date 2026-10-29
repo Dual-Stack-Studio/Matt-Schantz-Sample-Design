@@ -190,8 +190,13 @@ main{position:relative;z-index:1}
 .pcap .pm{font:400 13px/1 var(--jost);color:var(--mut);letter-spacing:.04em}
 .pcap .po{font:500 11px/1 var(--jost);letter-spacing:.2em;text-transform:uppercase;border:1px solid rgba(255,255,255,.3);padding:11px 16px;border-radius:99px;transition:background .35s,color .35s,border-color .35s}
 .pcap .po:hover{background:var(--teal);border-color:var(--teal);color:#021}
-.pcap.sw h3,.pcap.sw .pn,.pcap.sw .pm{animation:swap .9s var(--out)}
-@keyframes swap{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes swap{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.pcap h3,.pcap .pn,.pcap .pm{transition:opacity .3s ease,transform .34s var(--ease)}
+.pcap.out h3,.pcap.out .pn,.pcap.out .pm{opacity:0;transform:translateY(-10px)}
+.pcap.sw h3{animation:swap 1s var(--out) both}
+.pcap.sw .pn{animation:swap .9s .05s var(--out) both}
+.pcap.sw .pm{animation:swap .9s .16s var(--out) both}
+.pf .stage::after{content:'';position:absolute;left:0;right:0;bottom:0;height:clamp(60px,12vh,120px);background:linear-gradient(rgba(5,6,6,0),#050606);pointer-events:none;z-index:6}
 
 /* detail: tight mosaic (blocks of 3 columns, flush edges), tiles fall in like water */
 .mosaic{padding:6px var(--pad) 90px;display:flex;flex-direction:column;gap:6px}
