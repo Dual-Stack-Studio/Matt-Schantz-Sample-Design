@@ -604,10 +604,11 @@ function titleHTML(t) {
   return t.split(' ').map(w => `<span class="wd">${[...w].map(c => `<span class="ch" style="--k:${k++}">${c}</span>`).join('')}</span>`).join(' ');
 }
 const W = [1.3, .86, 1.1, .8, 1.22, .95, 1.15, .82, 1.0, .9];
+const mosaicCols = () => VW() > 1000 ? 3 : VW() > 560 ? 2 : 1;          // desktop 3 columns, tablet 2, phone 1 big column
 function buildMosaic(p) {
-  const imgs = imgsOf(p), colsN = VW() > 1000 ? 3 : 2;
-  const pat = colsN === 3 ? [3, 2, 3] : [3, 3], per = pat.reduce((a, b) => a + b, 0);
-  const root = h('section', 'mosaic');
+  const imgs = imgsOf(p), colsN = mosaicCols();
+  const pat = colsN === 3 ? [3, 2, 3] : colsN === 2 ? [3, 3] : [4], per = pat.reduce((a, b) => a + b, 0);
+  const root = h('section', 'mosaic'); root.dataset.cols = colsN;
   // block sizes: full blocks of `per`, never leaving a lonely 1-2 photo block at the end
   const sizes = []; let rem = imgs.length;
   while (rem > 0) {
@@ -648,12 +649,21 @@ function fitMosaic(root) {
     let hmax = 0;
     $$('.mcol', b).forEach(col => {
       const figs = $$('.fig', col), w = col.clientWidth, gap = parseFloat(getComputedStyle(col).rowGap) || 0;
-      hmax = Math.max(hmax, figs.reduce((s, f) => s + w / (+f.dataset.r || 1.5), 0) + gap * (figs.length - 1));
+      hmax = Math.max(hmax, figs.reduce((s, f) => s + (f.offsetWidth || w) / (+f.dataset.r || 1.5), 0) + gap * (figs.length - 1));
     });
     if (hmax) b.style.height = Math.round(hmax) + 'px';
   });
 }
-addEventListener('resize', () => { if (state.open != null) fitMosaic($('.mosaic', wrap)); });
+addEventListener('resize', () => {                                   // a new column count (rotating a phone, resizing the window) rebuilds the gallery
+  if (state.open == null) return;
+  const cur = $('.mosaic', wrap); if (!cur) return;
+  if (+cur.dataset.cols !== mosaicCols()) {
+    const nm = buildMosaic(P[state.open]); cur.replaceWith(nm);
+    if (io) $$('.fig', nm).forEach(x => io.observe(x));
+    nm.querySelectorAll('.fig').forEach(f => f.classList.add('in'));
+    fitMosaic(nm);
+  } else fitMosaic(cur);
+});
 
 function buildDetail(idx) {
   const p = P[idx];

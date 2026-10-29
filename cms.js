@@ -1,7 +1,7 @@
 /* Reads the content from Sanity (when cms-config.js has a project id) and puts it in the same shape the site already uses,
    then starts the site (loader.js and app.js). If Sanity cannot be reached, the content built into the files is used. */
 (() => {
-  const VER = '20261030d';
+  const VER = '20261030i';
   const CFG = window.SANITY || {};
   const load = src => new Promise(res => {
     const s = document.createElement('script'); s.src = src + '?v=' + VER; s.async = false; s.onload = s.onerror = res; document.body.append(s);
