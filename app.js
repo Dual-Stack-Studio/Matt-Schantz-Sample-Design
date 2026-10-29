@@ -7,8 +7,10 @@ const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const VW = () => document.documentElement.clientWidth || window.innerWidth;
 const VH = () => document.documentElement.clientHeight || window.innerHeight;
 const touch = matchMedia('(hover: none)').matches;
-const A = p => 'assets/' + p;
-const mid = src => 'mid/' + src.replace(/^matt\//, '').replace('/', '-');       // 1200 px copy: carousel and mosaic use it, the lightbox and the project header use the full file
+const isUrl = p => /^https?:/.test(p);
+const sz = (u, w, q) => /cdn\.sanity\.io/.test(u) && !u.includes('?') ? `${u}?w=${w}&q=${q}&auto=format` : u;        // Sanity resizes images on the fly
+const A = p => isUrl(p) ? sz(p, 1920, 80) : 'assets/' + p;
+const mid = src => isUrl(src) ? sz(src, 1200, 76) : 'mid/' + src.replace(/^matt\//, '').replace('/', '-');       // 1200 px copy: carousel and mosaic use it, the lightbox and the project header use the full file
 const MAN = window.MAN || {};
 const ratio = p => { const m = MAN[p]; return m ? m[0] / m[1] : 1.5; };
 const P = window.PROJECTS, V = window.VIDEOS;
@@ -128,9 +130,9 @@ new IntersectionObserver(es => es.forEach(e => { pfVis = e.isIntersecting; if (e
 /* ------------------------------------------------ photos that twinkle in the subjects band */
 const stars = $('#stars'), mqBox = $('.mq');
 const pool = P.flatMap(p => imgsOf(p).map(i => i.src));
-const thumb = src => 'thumbs/' + src.replace(/^matt\//, '').replace('/', '-');
+const thumb = src => isUrl(src) ? sz(src, 640, 74) : 'thumbs/' + src.replace(/^matt\//, '').replace('/', '-');
 // frame captures of his YouTube videos (the cover image plus three frames of each)
-const vpool = V.flatMap(v => [0, 1, 2, 3].map(n => `matt/videos/${v.id}-${n}.jpg`));
+const vpool = V.flatMap(v => v.frames || [0, 1, 2, 3].map(n => `matt/videos/${v.id}-${n}.jpg`));
 const live = [], recent = [];
 let starTimer = 0, starsVis = false;
 const rnd = (a, b) => a + Math.random() * (b - a);
@@ -443,8 +445,8 @@ function buildWriting() {
 new IntersectionObserver(es => es.forEach(e => { wVis = e.isIntersecting; })).observe(wsec);
 (async () => {
   try {
-    const idx = await (await fetch(A('writings/index.json'))).json();
-    const items = (await Promise.all(idx.map(async slug => {
+    const idx = window.CMS_WRITINGS ? [] : await (await fetch(A('writings/index.json'))).json();
+    const items = window.CMS_WRITINGS ? window.CMS_WRITINGS.map(w => ({ slug: w.slug, ...parseMd(w.text) })) : (await Promise.all(idx.map(async slug => {
       try {
         const r = await fetch(A(`writings/${slug}.md`));
         const txt = await r.text();

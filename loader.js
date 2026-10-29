@@ -7,8 +7,9 @@
   if (!el) { root.classList.remove('is-loading'); window.__ready = true; finish(); return; }
 
   const bar = el.querySelector('.lbar i'), pct = el.querySelector('.lpct');
-  const mid = src => 'assets/mid/' + src.replace(/^matt\//, '').replace('/', '-');
-  const list = ['assets/matt/home/hero.jpg'].concat((window.PROJECTS || []).map(p => mid(p.cover)));
+  const mid = src => /^https?:/.test(src) ? src + (src.includes('?') ? '' : '?w=1200&q=76&auto=format') : 'assets/mid/' + src.replace(/^matt\//, '').replace('/', '-');
+  const heroEl = document.querySelector('.hero-photo img'), hero = heroEl ? heroEl.getAttribute('src') : 'assets/matt/home/hero.jpg';
+  const list = [hero].concat((window.PROJECTS || []).map(p => mid(p.cover)));
   const total = list.length + 1;                                   // the images plus the fonts
   const t0 = performance.now(), MIN = 1100, MAX = 9000;
   let done = 0, shown = 0, over = false;
