@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Matt Schantz, redesign sample</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;1,500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Oswald:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+<div class="cur" id="cur" aria-hidden="true"><span id="curLabel"></span></div>
+<div class="vline" aria-hidden="true"></div>
+
+<header class="top">
+  <a class="logo" href="#top" aria-label="Matt Schantz"><svg viewBox="0 0 24 24"><path d="M12 1l2.2 8.8L23 12l-8.8 2.2L12 23l-2.2-8.8L1 12l8.8-2.2z"/></svg></a>
+  <nav>
+    <a href="#about">About</a><a href="#portfolio">Photography</a><a href="#film">Videos</a><a href="#writing">Writing</a><a href="#contact">Contact</a>
+    <a class="hello" href="#contact" data-contact>Say hello</a>
+    <button class="snd" id="snd" type="button" aria-label="Turn the music on" aria-pressed="false" data-state="idle"><i></i><i></i><i></i><i></i></button>
+  </nav>
+</header>
+
+<main id="top">
+  <!-- hero -->
+  <section class="hero" id="hero">
+    <h1 class="name" id="name"><span class="ln"><span>Matt</span></span><span class="ln"><span id="nameFit">Schantz</span></span></h1>
+    <figure class="hero-photo" data-par=".06"><img src="assets/matt/home/hero.jpg" alt="Matt Schantz"><span class="tint"></span></figure>
+    <div class="hero-foot">
+      <p>Where the road meets the light. &mdash;<br>National parks, wildlife and quiet places, photographed and filmed on the way.</p>
+      <a class="sdown" href="#about"><i><svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4M2 7.5l4 4 4-4"/></svg></i>scroll down</a>
+    </div>
+  </section>
+
+  <!-- about -->
+  <section class="sec about" id="about">
+    <div class="lab"><b>+</b>About</div>
+    <div class="ag">
+      <div class="al">
+        <h2 class="big">I follow the light<br>and wait for it.</h2>
+        <p class="para" id="para">Hey there, my name is Matt. This is a home for some of the pictures and videos I have taken and worked on over the past five or so years. Most of it happens outside: long drives, early alarms, cold hands and a camera that gets heavier by the hour. The mission is simple: bring back the place the way it felt.</p>
+      </div>
+      <div class="ar">
+        <figure class="atile"><div class="tile cy at" data-par=".04" data-cy="6400" data-delay="3200" data-full="1"></div><figcaption class="tcap"></figcaption></figure>
+        <figure class="atile"><div class="tile cy at" data-par="-.04" data-cy="6400" data-delay="6400" data-full="1"></div><figcaption class="tcap"></figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- collage -->
+  <section class="sec collage">
+    <figure class="tile cy c-big" data-par=".05" data-cy="7000" data-full="1"></figure>
+    <figure class="tile cy c-small" data-par="-.09" data-cy="5600"></figure>
+  </section>
+
+  <!-- places -->
+  <section class="places" aria-label="Places">
+    <div class="pg">
+      <span>Yellowstone</span><span>Grand Teton</span><span>Steamboat Springs</span><span>Lamar Valley</span><span>Old Faithful</span><span>Grassy Lake Road</span>
+      <span>Mammoth Hot Springs</span><span>Norris Geyser Basin</span><span>Colorado</span><span>Wyoming</span><span>West Thumb</span><span>Riddle Lake</span>
+    </div>
+  </section>
+
+  <!-- subjects -->
+  <section class="sec subjects">
+    <div class="lab"><b>+</b>Subjects</div>
+    <div class="mq">
+      <div class="row dim"><div class="trk" style="--s:60s">Landscape &nbsp;&ndash;&nbsp; Wildlife &nbsp;&ndash;&nbsp; Road trips &nbsp;&ndash;&nbsp; Short films &nbsp;&ndash;&nbsp; Landscape &nbsp;&ndash;&nbsp; Wildlife &nbsp;&ndash;&nbsp; Road trips &nbsp;&ndash;&nbsp; Short films</div></div>
+      <div class="row on"><div class="trk" style="--s:34s">Landscape Photography &nbsp;&ndash;&nbsp; Wildlife Photography &nbsp;&ndash;&nbsp; Landscape Photography &nbsp;&ndash;&nbsp; Wildlife Photography &nbsp;&ndash;&nbsp;</div></div>
+      <div class="row dim"><div class="trk" style="--s:70s">National Parks &nbsp;&ndash;&nbsp; Winter &nbsp;&ndash;&nbsp; Mountains &nbsp;&ndash;&nbsp; Hot springs &nbsp;&ndash;&nbsp; National Parks &nbsp;&ndash;&nbsp; Winter &nbsp;&ndash;&nbsp; Mountains &nbsp;&ndash;&nbsp; Hot springs</div></div>
+      <div class="row dim"><div class="trk" style="--s:55s">Interviews &nbsp;&ndash;&nbsp; Documentary &nbsp;&ndash;&nbsp; Editing &nbsp;&ndash;&nbsp; Interviews &nbsp;&ndash;&nbsp; Documentary &nbsp;&ndash;&nbsp; Editing</div></div>
+      <div class="stars" id="stars" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <!-- portfolio -->
+  <section class="sec portfolio" id="portfolio">
+    <div class="lab"><b>+</b>Portfolio<span class="cnt" id="cnt"></span></div>
+    <div class="pf flow">
+      <div class="pills" id="pills"></div>
+      <div class="stage" id="pstage"></div>
+      <div class="pcap" id="pcap">
+        <span class="pn" id="cn">01</span>
+        <h3 id="ct">Title<small id="cs"></small></h3>
+        <span class="pm" id="cm"></span>
+        <button class="po" id="popen" type="button">Open project ↗</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- film -->
+  <section class="sec film" id="film">
+    <div class="lab"><b>+</b>Videos</div>
+    <div class="vgrid" id="vgrid"></div>
+  </section>
+
+  <!-- writing -->
+  <section class="sec writing" id="writing">
+    <div class="lab"><b>+</b>Writing<span class="cnt" id="wcnt"></span></div>
+    <ol class="widx" id="widx"></ol>
+  </section>
+
+  <!-- contact -->
+  <section class="sec talk" id="contact">
+    <div class="tcols">
+      <div><span class="k">Navigation</span><a href="#top">Home</a><a href="#about">About</a><a href="#portfolio">Photography</a><a href="#film">Videos</a><a href="#writing">Writing</a></div>
+      <figure class="orb" data-contact tabindex="0" role="button" aria-label="Send me a message"><img src="assets/matt/steamboat-springs/03.jpg" alt=""><figcaption>Ready to create something extraordinary?<br><b>Let&rsquo;s Talk</b></figcaption></figure>
+      <div class="r"><span class="k">Socials</span><a href="https://www.instagram.com/matshants7" target="_blank" rel="noopener">Instagram</a><a href="https://www.youtube.com/@matshants7" target="_blank" rel="noopener">YouTube</a><a href="#contact" data-contact>Email</a></div>
+    </div>
+    <div class="legal"><span>&copy; 2026 Matt Schantz. Redesign sample with temporary material from mattschantz.com.</span><span class="credit">Designed and built by Dual-Stack Studio</span><span>Privacy Policy</span></div>
+  </section>
+</main>
+
+<div id="contactModal" aria-hidden="true">
+  <div class="cpanel" role="dialog" aria-modal="true" aria-labelledby="ctitle">
+    <button class="cclose" id="cclose" type="button" aria-label="Close the form"><i></i></button>
+    <div class="cleft">
+      <div>
+        <span class="ck"><b>+</b>Contact</span>
+        <h2 id="ctitle">Let&rsquo;s<br>talk.</h2>
+      </div>
+      <div class="cinfo">
+        <p>Questions, a project, or just hello. Write a few lines and I will get back to you as soon as I can.</p>
+        <a href="mailto:hello@example.com" id="cmail">hello@example.com</a>
+      </div>
+    </div>
+    <form class="cform" id="cform" novalidate>
+      <div class="fld"><label for="cname">Your name</label><input id="cname" name="name" type="text" autocomplete="name" required><span class="err" data-for="name"></span></div>
+      <div class="fld"><label for="cemail">Your email</label><input id="cemail" name="email" type="email" autocomplete="email" required><span class="err" data-for="email"></span></div>
+      <div class="fld chipsf"><label>What is it about? <em>(optional)</em></label>
+        <div class="chips" id="cchips" role="group" aria-label="Topic">
+          <button type="button" class="chip" data-v="Photography">Photography</button>
+          <button type="button" class="chip" data-v="Video">Video</button>
+          <button type="button" class="chip" data-v="Writing">Writing</button>
+          <button type="button" class="chip" data-v="Something else">Something else</button>
+        </div>
+      </div>
+      <div class="fld"><label for="cmsg">Message</label><textarea id="cmsg" name="message" rows="4" required></textarea><span class="err" data-for="message"></span></div>
+      <input class="hp" type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <p class="cfail" id="cfail" role="alert"></p>
+      <button class="send" id="csend" type="submit"><span>Send message</span><i>&nearr;</i></button>
+    </form>
+    <div class="cthanks" id="cthanks" aria-live="polite">
+      <div class="tin">
+        <svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24"/><path d="M15 27l8 8 15-17"/></svg>
+        <h3 id="cthx">Thank you.</h3>
+        <p>Your message is on its way. I will get back to you soon.</p>
+        <small>Taking you back to the top&hellip;</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="totop" id="totop" type="button" aria-label="Back to the top" tabindex="-1">
+  <svg class="ring" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22.5"/></svg>
+  <svg class="arw" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.8h8M3.6 7.4 7 4l3.4 3.4M7 4v8.4"/></svg>
+</button>
+
+<div id="vmodal" aria-hidden="true"><button class="vclose" id="vclose" type="button">Close</button><div class="vframe" id="vframe"></div></div>
+
+<div id="reader" aria-hidden="true">
+  <div class="rprog" id="rprog"></div>
+  <button class="close" id="rclose" type="button" aria-label="Close piece"><span>Close</span><i></i></button>
+  <div class="rwrap" id="rwrap"></div>
+</div>
+
+<div id="lb" aria-hidden="true">
+  <div class="lbstage"><img id="lbImg" alt=""></div>
+  <div class="lbcap" id="lbCap"></div>
+  <button class="lbbtn lbprev" id="lbPrev" type="button" aria-label="Previous photo"><svg viewBox="0 0 12 12"><path d="M8 1 3 6l5 5"/></svg></button>
+  <button class="lbbtn lbnext" id="lbNext" type="button" aria-label="Next photo"><svg viewBox="0 0 12 12"><path d="M4 1l5 5-5 5"/></svg></button>
+  <button class="lbbtn lbclose" id="lbClose" type="button" aria-label="Close photo"><svg viewBox="0 0 12 12"><path d="M2 2l8 8M10 2l-8 8"/></svg></button>
+</div>
+
+<div id="detail" aria-hidden="true">
+  <div class="dprog" id="dprog"></div>
+  <button class="close" id="close" type="button" aria-label="Close project"><span>Close</span><i></i></button>
+  <div class="dwrap" id="dwrap"></div>
+</div>
+
+<script src="manifest.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
