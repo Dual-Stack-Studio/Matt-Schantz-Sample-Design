@@ -163,16 +163,19 @@ function spawnStar() {
   let w = Math.sqrt(area * r), hgt = Math.sqrt(area / r);
   if (hgt > H * .8) { hgt = H * .8; w = hgt * r; }
   if (w > W * .46) { w = W * .46; hgt = w / r; }
+  if (isVid && w > 480) { w = 480; hgt = w / r; }           // the frames are 640 px wide at best: never blow them up past that
   let best = null, bestScore = 9;
   for (let i = 0; i < 16; i++) {
     const c = { x: rnd(W * .02, W * .98 - w), y: rnd(H * .04, H * .94 - hgt), w, h: hgt };
     const score = live.reduce((s, o) => s + overlap(c, o.box), 0);
     if (score < bestScore) { best = c; bestScore = score; if (score === 0) break; }
   }
-  const el = h('div', 'star' + (isVid ? ' vf' : ''), `<img src="${A(isVid ? src : thumb(src))}" alt="">`);
+  const big = w * (window.devicePixelRatio || 1) > 560;     // a large tile gets the 1200 px copy, a small one the 640 px thumbnail
+  const el = h('div', 'star' + (isVid ? ' vf' : ''), `<img src="${A(isVid ? src : (big ? mid(src) : thumb(src)))}" alt="" decoding="async">`);
   Object.assign(el.style, { left: best.x + 'px', top: best.y + 'px', width: w + 'px', height: hgt + 'px' });
   stars.append(el);
   const rec = { el, box: best }; live.push(rec);
+  el.firstChild.addEventListener('error', () => { el.remove(); const k = live.indexOf(rec); if (k > -1) live.splice(k, 1); });   // a frame that does not exist is simply skipped
   void el.offsetWidth; el.classList.add('on');
   const hold = rnd(3200, 5600);
   setTimeout(() => { el.classList.remove('on'); el.classList.add('off'); }, hold);
@@ -536,7 +539,7 @@ document.addEventListener('pointerover', e => {
   else if (t.closest('.dnext')) label = 'Next';
   else if (t.closest('.slide[data-d="0"]')) label = 'Open';
   else if (t.closest('.wprev, .widx li')) label = 'Read';
-  else if (t.closest('.orb')) label = 'Say hello';
+  else if (t.closest('.cta')) label = 'Say hello';
   else if (t.closest('.mt')) label = 'View';
   else if (t.closest('.vid')) label = 'Play';
   cur$.classList.toggle('big', !!label); curLabel.textContent = label;

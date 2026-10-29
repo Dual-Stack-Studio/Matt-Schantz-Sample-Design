@@ -6,7 +6,7 @@
 <title>Matt Schantz, redesign sample</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;1,500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Oswald:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;1,500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Oswald:wght@500;600&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
 <script>document.documentElement.classList.add("is-loading")</script>
 <link rel="preload" as="image" href="assets/matt/home/hero.jpg" fetchpriority="high">
 <style>/* loading screen: inline so it is styled even when a cached style.css is older than this page */
@@ -18,8 +18,8 @@ html.is-loading,html.is-loading body{overflow:hidden}
 #loader.out{transform:translateY(-101%);pointer-events:none}
 #loader .lin{display:flex;flex-direction:column;align-items:center;gap:20px;transition:opacity .5s ease,transform .9s var(--out)}
 #loader.out .lin{opacity:0;transform:translateY(-24px)}
-#loader .lmark{width:28px;height:28px;fill:var(--teal);animation:lspin 6s linear infinite}
-@keyframes lspin{to{transform:rotate(360deg)}}
+#loader .lmark{width:30px;height:30px;fill:none;stroke:var(--teal);stroke-width:1.3;stroke-linejoin:round;animation:lbreath 2.4s ease-in-out infinite}
+@keyframes lbreath{0%,100%{opacity:.45}50%{opacity:1}}
 #loader .lname{font:500 12px/1 var(--jost);letter-spacing:.34em;text-transform:uppercase;padding-left:.34em;color:var(--ink)}
 #loader .lbar{display:block;width:min(180px,46vw);height:1px;background:var(--line)}
 #loader .lbar i{display:block;height:100%;background:var(--teal);transform-origin:left;transform:scaleX(0)}
@@ -28,12 +28,12 @@ html.is-loading,html.is-loading body{overflow:hidden}
 #loader.out .lnote{opacity:0}
 @media (prefers-reduced-motion:reduce){#loader .lmark{animation:none}#loader{transition:opacity .5s}#loader.out{transform:none;opacity:0}}
 </style>
-<link rel="stylesheet" href="style.css?v=20261029f">
+<link rel="stylesheet" href="style.css?v=20261029n">
 </head>
 <body>
 <div id="loader" role="status" aria-live="polite" aria-label="Loading">
   <div class="lin">
-    <svg class="lmark" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1l2.2 8.8L23 12l-8.8 2.2L12 23l-2.2-8.8L1 12l8.8-2.2z"/></svg>
+    <svg class="lmark" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 19.5 9.5 7l4.2 7 2.8-4 5 9.5z"/><circle cx="17.6" cy="5.6" r="1.7"/></svg>
     <span class="lname">Matt Schantz</span>
     <span class="lbar"><i></i></span>
     <span class="lpct" aria-hidden="true">00</span>
@@ -45,7 +45,7 @@ html.is-loading,html.is-loading body{overflow:hidden}
 <div class="vline" aria-hidden="true"></div>
 
 <header class="top">
-  <a class="logo" href="#top" aria-label="Matt Schantz"><svg viewBox="0 0 24 24"><path d="M12 1l2.2 8.8L23 12l-8.8 2.2L12 23l-2.2-8.8L1 12l8.8-2.2z"/></svg></a>
+  <a class="logo" href="#top" aria-label="Matt Schantz"><svg viewBox="0 0 24 24"><path d="M2.5 19.5 9.5 7l4.2 7 2.8-4 5 9.5z"/><circle cx="17.6" cy="5.6" r="1.7"/></svg></a>
   <nav>
     <a href="#about">About</a><a href="#portfolio">Photography</a><a href="#film">Videos</a><a href="#writing">Writing</a><a href="#contact">Contact</a>
     <a class="hello" href="#contact" data-contact>Say hello</a>
@@ -134,12 +134,22 @@ html.is-loading,html.is-loading body{overflow:hidden}
 
   <!-- contact -->
   <section class="sec talk" id="contact">
-    <div class="tcols">
-      <div><span class="k">Navigation</span><a href="#top">Home</a><a href="#about">About</a><a href="#portfolio">Photography</a><a href="#film">Videos</a><a href="#writing">Writing</a></div>
-      <figure class="orb" data-contact tabindex="0" role="button" aria-label="Send me a message"><img src="assets/matt/steamboat-springs/03.jpg" alt=""><figcaption>Ready to create something extraordinary?<br><b>Let&rsquo;s Talk</b></figcaption></figure>
-      <div class="r"><span class="k">Socials</span><a href="https://www.instagram.com/matshants7" target="_blank" rel="noopener">Instagram</a><a href="https://www.youtube.com/@matshants7" target="_blank" rel="noopener">YouTube</a><a href="#contact" data-contact>Email</a></div>
+    <div class="fgrid">
+      <div class="ftext">
+        <div class="ftop">
+        <a class="flogo" href="#top" aria-label="Matt Schantz, back to the top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 19.5 9.5 7l4.2 7 2.8-4 5 9.5z"/><circle cx="17.6" cy="5.6" r="1.7"/></svg></a>
+        <div class="fcols">
+          <nav aria-label="Footer"><span class="k">Navigation</span><a href="#top">Home</a><a href="#about">About</a><a href="#portfolio">Photography</a><a href="#film">Videos</a><a href="#writing">Writing</a></nav>
+          <div class="r"><span class="k">Socials</span><a href="https://www.instagram.com/matshants7" target="_blank" rel="noopener">Instagram</a><a href="https://www.youtube.com/@matshants7" target="_blank" rel="noopener">YouTube</a><a href="#contact" data-contact>Email</a></div>
+        </div>
+        </div>
+        <div class="legal"><span>&copy; 2026 Matt Schantz. Redesign sample with temporary material from mattschantz.com.</span><span class="credit">Designed and built by Dual-Stack Studio</span><span>Privacy Policy</span></div>
+      </div>
+      <figure class="cta" data-contact tabindex="0" role="button" aria-label="Send me a message">
+        <img src="assets/mid/steamboat-springs-03.jpg" alt="" loading="lazy" decoding="async">
+        <figcaption>Ready to create something extraordinary?<b>Let&rsquo;s Talk</b></figcaption>
+      </figure>
     </div>
-    <div class="legal"><span>&copy; 2026 Matt Schantz. Redesign sample with temporary material from mattschantz.com.</span><span class="credit">Designed and built by Dual-Stack Studio</span><span>Privacy Policy</span></div>
   </section>
 </main>
 
@@ -210,9 +220,9 @@ html.is-loading,html.is-loading body{overflow:hidden}
   <div class="dwrap" id="dwrap"></div>
 </div>
 
-<script src="manifest.js?v=20261029f"></script>
-<script src="data.js?v=20261029f"></script>
-<script src="cms-config.js?v=20261029f"></script>
-<script src="cms.js?v=20261029f"></script>
+<script src="manifest.js?v=20261029n"></script>
+<script src="data.js?v=20261029n"></script>
+<script src="cms-config.js?v=20261029n"></script>
+<script src="cms.js?v=20261029n"></script>
 </body>
 </html>

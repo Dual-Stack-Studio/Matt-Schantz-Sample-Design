@@ -1,7 +1,7 @@
 /* Reads the content from Sanity (when cms-config.js has a project id) and puts it in the same shape the site already uses,
    then starts the site (loader.js and app.js). If Sanity cannot be reached, the content built into the files is used. */
 (() => {
-  const VER = '20261029f';
+  const VER = '20261029n';
   const CFG = window.SANITY || {};
   const load = src => new Promise(res => {
     const s = document.createElement('script'); s.src = src + '?v=' + VER; s.async = false; s.onload = s.onerror = res; document.body.append(s);
@@ -42,10 +42,11 @@
     return out;
   }
 
+  const known = new Set((window.VIDEOS || []).map(v => v.id));          // the sample videos keep their sharp local frames
   const ytId = u => { const m = String(u || '').match(/(?:youtu\.be\/|[?&]v=|embed\/|shorts\/)([\w-]{11})/); return m ? m[1] : null; };
   function videos(list) {
     return list.map(v => ({ id: ytId(v.youtubeUrl), title: v.title || 'Video' })).filter(v => v.id).map(v => (
-      { ...v, frames: ['hqdefault', '1', '2', '3'].map(f => `https://i.ytimg.com/vi/${v.id}/${f}.jpg`) }));
+      { ...v, frames: known.has(v.id) ? [0, 1, 2, 3].map(n => `matt/videos/${v.id}-${n}.jpg`) : [`https://i.ytimg.com/vi/${v.id}/maxresdefault.jpg`] }));
   }
 
   // Sanity's text editor (Portable Text) becomes the small markdown the Writing section already reads.
