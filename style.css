@@ -647,6 +647,34 @@ html{overflow-x:hidden}
 @media (prefers-reduced-motion:reduce){.top,.top.off{transition:opacity .2s}}
 
 
+/* ===== phone menu: a burger in the top bar opens a full-screen list ===== */
+.burger,.menu{display:none}
+@media (max-width:640px){
+  .top nav{gap:6px}
+  .burger{display:block;position:relative;width:42px;height:42px;margin-right:-8px;color:inherit}
+  .burger i{position:absolute;left:11px;right:11px;height:1.5px;background:currentColor;transition:transform .5s var(--out),top .5s var(--out)}
+  .burger i:nth-child(1){top:17px}.burger i:nth-child(2){top:24px}
+  html.menu-open .burger i:nth-child(1){top:20.5px;transform:rotate(45deg)}
+  html.menu-open .burger i:nth-child(2){top:20.5px;transform:rotate(-45deg)}
+  .menu{display:flex;flex-direction:column;justify-content:space-between;position:fixed;inset:0;z-index:58;padding:calc(92px + env(safe-area-inset-top)) var(--pad) calc(30px + env(safe-area-inset-bottom));
+    background:radial-gradient(ellipse 90% 50% at 0% 0%,rgba(24,47,55,.7),transparent 72%),var(--bg);opacity:0;visibility:hidden;transition:opacity .45s ease,visibility 0s .45s}
+  .menu nav{display:flex;flex-direction:column}
+  .menu nav a{display:flex;align-items:baseline;gap:16px;padding:16px 0;border-bottom:1px solid var(--line);font:600 clamp(34px,11vw,52px)/1 var(--jost);letter-spacing:-.02em;text-transform:uppercase;
+    opacity:0;transform:translateY(22px);transition:opacity .5s ease,transform .7s var(--out),color .3s}
+  .menu nav a small{font:500 11px/1 var(--jost);letter-spacing:.16em;color:var(--teal)}
+  .menu nav a:active{color:var(--teal)}
+  .mfoot{display:flex;gap:26px;font:400 12px/1 var(--jost);letter-spacing:.08em;text-transform:uppercase;color:var(--mut);opacity:0;transition:opacity .6s ease .3s}
+  html.menu-open{overflow:hidden}
+  html.menu-open .menu{opacity:1;visibility:visible;transition:opacity .45s ease,visibility 0s}
+  html.menu-open .menu nav a{opacity:1;transform:none}
+  html.menu-open .menu nav a:nth-child(2){transition-delay:.06s}html.menu-open .menu nav a:nth-child(3){transition-delay:.12s}
+  html.menu-open .menu nav a:nth-child(4){transition-delay:.18s}html.menu-open .menu nav a:nth-child(5){transition-delay:.24s}
+  html.menu-open .mfoot{opacity:1}
+  /* while the menu is open the bar stays put and plain */
+  html.menu-open .top{opacity:1!important;visibility:visible;transform:none;mix-blend-mode:normal}
+  html.menu-open .top::before{opacity:0}
+}
+
 /* the music button also lives in the project and reading pages, next to Close */
 .snd-o{position:fixed;z-index:99;top:22px;right:calc(var(--pad) + 130px);color:#fff}
 @media (hover:none),(pointer:coarse){.snd-o{top:16px;right:calc(var(--pad) + 120px)}}

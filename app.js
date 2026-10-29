@@ -76,6 +76,24 @@ function topBar() {
 }
 addEventListener('scroll', topBar, { passive: true }); addEventListener('resize', topBar); topBar();
 
+/* ------------------------------------------------ phone menu */
+const burger = $('#burger'), menu = $('#menu'), root = document.documentElement;
+function menuSet(on) {
+  root.classList.toggle('menu-open', on);
+  burger.setAttribute('aria-expanded', on ? 'true' : 'false');
+  burger.setAttribute('aria-label', on ? 'Close the menu' : 'Open the menu');
+  menu.setAttribute('aria-hidden', on ? 'false' : 'true');
+}
+burger.addEventListener('click', () => menuSet(!root.classList.contains('menu-open')));
+$$('a', menu).forEach(a => a.addEventListener('click', e => {
+  const t = a.getAttribute('href').startsWith('#') ? document.getElementById(a.getAttribute('href').slice(1)) : null;
+  if (!t) return;                                              // external links open normally
+  e.preventDefault(); menuSet(false);
+  setTimeout(() => scrollTo({ top: t.getBoundingClientRect().top + scrollY, behavior: reduce ? 'auto' : 'smooth' }), 60);
+}));
+addEventListener('keydown', e => { if (e.key === 'Escape' && root.classList.contains('menu-open')) menuSet(false); });
+addEventListener('resize', () => { if (innerWidth > 640 && root.classList.contains('menu-open')) menuSet(false); });
+
 /* ------------------------------------------------ about paragraph: words light up with scroll */
 const para = $('#para');
 para.innerHTML = para.textContent.trim().split(/\s+/).map(w => `<span class="w">${w}</span>`).join(' ');

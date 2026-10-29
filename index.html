@@ -28,7 +28,7 @@ html.is-loading,html.is-loading body{overflow:hidden}
 #loader.out .lnote{opacity:0}
 @media (prefers-reduced-motion:reduce){#loader .lmark{animation:none}#loader{transition:opacity .5s}#loader.out{transform:none;opacity:0}}
 </style>
-<link rel="stylesheet" href="style.css?v=20261030i">
+<link rel="stylesheet" href="style.css?v=20261030j">
 </head>
 <body>
 <div id="loader" role="status" aria-live="polite" aria-label="Loading">
@@ -50,8 +50,19 @@ html.is-loading,html.is-loading body{overflow:hidden}
     <a href="#about">About</a><a href="#portfolio">Photography</a><a href="#film">Videos</a><a href="#writing">Writing</a><a href="#contact">Contact</a>
     <a class="hello" href="#contact" data-contact>Say hello</a>
     <button class="snd" id="snd" type="button" aria-label="Turn the music on" aria-pressed="false" data-state="idle"><i></i><i></i><i></i><i></i></button>
+    <button class="burger" id="burger" type="button" aria-label="Open the menu" aria-expanded="false" aria-controls="menu"><i></i><i></i></button>
   </nav>
 </header>
+<div class="menu" id="menu" aria-hidden="true">
+  <nav aria-label="Menu">
+    <a href="#about"><small>01</small>About</a>
+    <a href="#portfolio"><small>02</small>Photography</a>
+    <a href="#film"><small>03</small>Videos</a>
+    <a href="#writing"><small>04</small>Writing</a>
+    <a href="#contact"><small>05</small>Contact</a>
+  </nav>
+  <div class="mfoot"><a href="https://www.instagram.com/matshants7" target="_blank" rel="noopener">Instagram</a><a href="https://www.youtube.com/@matshants7" target="_blank" rel="noopener">YouTube</a></div>
+</div>
 
 <main id="top">
   <!-- hero -->
@@ -222,9 +233,9 @@ html.is-loading,html.is-loading body{overflow:hidden}
   <div class="dwrap" id="dwrap"></div>
 </div>
 
-<script src="manifest.js?v=20261030i"></script>
-<script src="data.js?v=20261030i"></script>
-<script src="cms-config.js?v=20261030i"></script>
-<script src="cms.js?v=20261030i"></script>
+<script src="manifest.js?v=20261030j"></script>
+<script src="data.js?v=20261030j"></script>
+<script src="cms-config.js?v=20261030j"></script>
+<script src="cms.js?v=20261030j"></script>
 </body>
 </html>
