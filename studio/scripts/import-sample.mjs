@@ -61,6 +61,12 @@ function parseWriting(md) {
   return {meta, body}
 }
 
+// the small line is a date like 10/28/24 for most projects; otherwise use the middle of the year
+function dateOf(p) {
+  const m = /^(\d\d)\/(\d\d)\/(\d\d)$/.exec(p.sub || '')
+  return m ? `20${m[3]}-${m[1]}-${m[2]}` : `${p.year}-01-15`
+}
+
 async function main() {
   console.log(`Importing into project ${client.config().projectId}, dataset ${client.config().dataset}`)
 
@@ -71,14 +77,17 @@ async function main() {
       _type: 'photo', _key: key(), image: await upload(it.src), caption: it.cap || '',
     }))
     await client.createOrReplace({
-      _id: `project-${p.id}`, _type: 'project', title: p.title, subtitle: p.sub, date: `${p.year}-01-01`,
+      _id: `project-${p.id}`, _type: 'project', title: p.title, subtitle: p.sub, date: dateOf(p),
       blurb: '', cover: await upload(p.cover), photos,
     })
   }
 
   // videos
-  for (const v of VIDEOS) {
+  // videos have no date in the sample: they are created last-to-first so the newest-created one (the first in the list) comes first on the site
+  for (const v of [...VIDEOS].reverse()) {
     console.log('Video:', v.title)
+    await client.delete(`video-${v.id.replace(/[^\w-]/g, '')}`).catch(() => {})
+    await new Promise((r) => setTimeout(r, 1100))
     await client.createOrReplace({_id: `video-${v.id.replace(/[^\w-]/g, '')}`, _type: 'video', title: v.title, youtubeUrl: `https://www.youtube.com/watch?v=${v.id}`})
   }
 
