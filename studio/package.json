@@ -1,0 +1,20 @@
+{
+  "name": "matt-schantz-studio",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "main": "package.json",
+  "scripts": {
+    "dev": "sanity dev",
+    "build": "sanity build",
+    "deploy": "sanity deploy",
+    "import": "sanity exec scripts/import-sample.mjs --with-user-token"
+  },
+  "dependencies": {
+    "@sanity/vision": "^6.21.0",
+    "react": "^19.2.2",
+    "react-dom": "^19.2.2",
+    "sanity": "^6.21.0",
+    "styled-components": "^6.1.15"
+  }
+}
