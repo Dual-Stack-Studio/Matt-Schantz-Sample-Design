@@ -1,7 +1,7 @@
 /* Reads the content from Sanity (when cms-config.js has a project id) and puts it in the same shape the site already uses,
    then starts the site (loader.js and app.js). If Sanity cannot be reached, the content built into the files is used. */
 (() => {
-  const VER = '20261029r';
+  const VER = '20261030d';
   const CFG = window.SANITY || {};
   const load = src => new Promise(res => {
     const s = document.createElement('script'); s.src = src + '?v=' + VER; s.async = false; s.onload = s.onerror = res; document.body.append(s);
@@ -14,7 +14,7 @@
     "settings": *[_id=="siteSettings"][0]{heroTagline,aboutHeading,aboutText,subjects,places,email,formEndpoint,instagramUrl,youtubeUrl,"hero":heroImage.asset->${dims}},
     "projects": *[_type=="project" && defined(cover.asset)] | order(date desc, _createdAt desc){_id,title,subtitle,date,blurb,"cover":cover.asset->${dims},"photos":photos[defined(image.asset)]{caption,"a":image.asset->${dims}}},
     "videos": *[_type=="video" && defined(youtubeUrl)] | order(coalesce(date,"0000") desc, _createdAt desc){_id,title,youtubeUrl},
-    "writings": *[_type=="writing"] | order(date desc){_id,title,date,tag,excerpt,body[]{..., _type=="image" => {"url":asset->url}}}
+    "writings": *[_type=="writing"] | order(date desc){_id,title,date,tag,excerpt,"cover":cover{"url":asset->url,caption},body[]{..., _type=="image" => {"url":asset->url}}}
   }`;
   const host = CFG.apiHost || `https://${CFG.projectId}.apicdn.sanity.io`;      // apiHost is only for local tests
   const url = `${host}/v2025-01-01/data/query/${CFG.dataset || 'production'}?query=${encodeURIComponent(QUERY)}`;
@@ -66,7 +66,7 @@
         if (/^h\d$/.test(b.style || '')) return '## ' + one(text);
         return text.replace(/\s*\n+\s*/g, ' ');
       }).filter(Boolean).join('\n\n');
-      const head = ['---', 'title: ' + one(w.title), 'date: ' + (w.date || ''), 'tag: ' + one(w.tag), w.excerpt ? 'excerpt: ' + one(w.excerpt) : null, '---', ''].filter(x => x !== null).join('\n');
+      const head = ['---', 'title: ' + one(w.title), 'date: ' + (w.date || ''), 'tag: ' + one(w.tag), w.excerpt ? 'excerpt: ' + one(w.excerpt) : null, w.cover && w.cover.url ? 'cover: ' + w.cover.url : null, w.cover && w.cover.url && w.cover.caption ? 'coverCaption: ' + one(w.cover.caption) : null, '---', ''].filter(x => x !== null).join('\n');
       return { slug: w._id, text: head + body };
     });
   }
@@ -88,7 +88,7 @@
   }
   function subjects(list) {                                                  // the moving words: up to four rows, each one a loop of two identical halves
     const rows = [...document.querySelectorAll('.mq .row')]; if (!rows.length) return;
-    const n = Math.min(rows.length, list.length), sep = ' &nbsp;&ndash;&nbsp; ', speed = [60, 34, 70, 55];
+    const n = Math.min(rows.length, list.length), sep = ' &nbsp;&ndash;&nbsp; ', speed = [140, 130, 160, 124];
     rows.forEach((row, r) => {
       if (r >= n) { row.remove(); return; }
       let part = list.slice(Math.floor(r * list.length / n), Math.floor((r + 1) * list.length / n));

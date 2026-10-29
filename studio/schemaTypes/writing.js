@@ -17,6 +17,13 @@ export const writing = defineType({
       description: 'Shown in the list. If you leave it empty, the first lines of the text are used.',
     }),
     defineField({
+      name: 'cover',
+      title: 'Main photo (optional)',
+      type: 'image',
+      description: 'A tall photo shown next to the title when the piece is open. Photos added inside the text appear on the same side, below it.',
+      fields: [defineField({name: 'caption', title: 'Caption', type: 'string'})],
+    }),
+    defineField({
       name: 'body',
       title: 'Text',
       type: 'array',

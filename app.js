@@ -60,6 +60,22 @@ function heroLine() {
 }
 addEventListener('scroll', heroLine, { passive: true }); addEventListener('resize', heroLine); heroLine();
 
+/* ------------------------------------------------ top bar: it fades away gradually after the hero and returns smoothly once you start scrolling up */
+const topbar = $('.top');
+let barY = 0, barUp = 0, barDown = 0, barShown = false;
+function topBar() {
+  const y = window.scrollY || document.documentElement.scrollTop, H = $('#hero').offsetHeight || VH(), dy = y - barY;
+  barY = y;
+  if (dy < 0) { barUp -= dy; barDown = 0; if (barUp > 120) barShown = true; }       // after a short climb the bar comes back
+  else if (dy > 0) { barDown += dy; barUp = 0; if (barDown > 24) barShown = false; }
+  let o = 1;
+  if (y > H * .4) o = Math.max(1 - (y - H * .4) / (H * .42), barShown ? 1 : 0);      // a gradual fade between 40% and 82% of the hero
+  topbar.style.opacity = o.toFixed(2);
+  topbar.classList.toggle('off', o < .08);
+  topbar.classList.toggle('solid', y > H * .6 && o > .3);                           // below the hero it gets a soft dark backing so it never fights with the photos
+}
+addEventListener('scroll', topBar, { passive: true }); addEventListener('resize', topBar); topBar();
+
 /* ------------------------------------------------ about paragraph: words light up with scroll */
 const para = $('#para');
 para.innerHTML = para.textContent.trim().split(/\s+/).map(w => `<span class="w">${w}</span>`).join(' ');
@@ -249,7 +265,7 @@ $('#vclose').addEventListener('click', closeV);
 vmodal.addEventListener('click', e => { if (e.target === vmodal) closeV(); });
 
 /* ------------------------------------------------ background music: Valley Sunset, starts on the first gesture, one click mutes */
-const snd = $('#snd');
+const snd = $('#snd'), sndAll = $$('.snd');                     // the one in the top bar plus the copies inside the project and reading pages
 const SND = { src: 'assets/audio/valley-sunset.mp3', vol: .17, xf: 5 };   // volume 0 to 1: soft, well under the voices and the videos
 let sndState = 'idle', sndTimer = 0, master = 0, sndDucked = false, sndHidden = false, sndTrying = false;
 let actx = null, gainNode = null;
@@ -271,9 +287,12 @@ function ensureAudio() {                                        // only iPhones/
 const setLevel = v => { master = v; if (gainNode) gainNode.gain.value = v; else pa.volume = pb.volume = clamp(v, 0, 1); };
 setLevel(0);
 const setSnd = st => {
-  sndState = st; snd.dataset.state = st;
-  snd.setAttribute('aria-pressed', st === 'on' ? 'true' : 'false');
-  snd.setAttribute('aria-label', st === 'on' ? 'Mute the music' : 'Turn the music on');
+  sndState = st;
+  sndAll.forEach(b => {
+    b.dataset.state = st;
+    b.setAttribute('aria-pressed', st === 'on' ? 'true' : 'false');
+    b.setAttribute('aria-label', st === 'on' ? 'Mute the music' : 'Turn the music on');
+  });
 };
 function fadeSound(to, ms) {                                    // time-based fade on a timer, so it also runs when the tab is throttled
   clearInterval(sndTimer);
@@ -308,16 +327,16 @@ setInterval(() => {                                              // safety net: 
   if (sc.ended) sc.currentTime = 0;
   sc.play().catch(() => {});
 }, 1500);
-snd.addEventListener('click', e => {
+sndAll.forEach(b => b.addEventListener('click', e => {
   e.stopPropagation();
   if (sndState === 'on') soundOff(true); else soundOn(true);
-});
+}));
 if (stored() === 'off') setSnd('off');
 else {
   (window.siteReady || Promise.resolve()).then(() => soundOn(false));   // works if the browser allows autoplay
   const gestures = ['pointerdown', 'touchend', 'keydown', 'click'];
   const first = async e => {
-    if (!window.__ready || snd.contains(e.target) || sndState !== 'idle' || sndTrying) return;
+    if (!window.__ready || e.target.closest && e.target.closest('.snd') || sndState !== 'idle' || sndTrying) return;
     sndTrying = true;
     const done = await soundOn(false);
     sndTrying = false;
@@ -425,15 +444,16 @@ function parseMd(txt) {
   const meta = {}; let body = txt;
   if (m) { m[1].split('\n').forEach(l => { const i = l.indexOf(':'); if (i > 0) meta[l.slice(0, i).trim()] = l.slice(i + 1).trim(); }); body = m[2]; }
   const blocks = body.replace(/\r/g, '').trim().split(/\n\s*\n/).map(b => b.trim()).filter(Boolean);
+  const figs = meta.cover ? [{ src: meta.cover, cap: meta.coverCaption || '' }] : [];       // the cover comes first, then the photos written inside the text
   const html = blocks.map(b => {
     let k;
-    if ((k = b.match(/^!\[(.*?)\]\((.+?)\)$/))) return `<figure class="rfig"><img src="${A(k[2])}" alt="${esc(k[1])}" loading="lazy"><figcaption>${inl(k[1])}</figcaption></figure>`;
+    if ((k = b.match(/^!\[(.*?)\]\((.+?)\)$/))) { figs.push({ src: k[2], cap: k[1] }); return ''; }
     if (b.startsWith('>')) return `<blockquote class="rq">${inl(b.replace(/^>\s?/gm, ''))}</blockquote>`;
     if (b.startsWith('## ')) return `<h3 class="rh">${inl(b.slice(3))}</h3>`;
     return `<p>${inl(b.replace(/\n/g, ' '))}</p>`;
   }).join('');
   const first = blocks.find(b => !/^(!\[|>|## )/.test(b)) || '';
-  return { meta, html, mins: Math.max(1, Math.round(body.split(/\s+/).filter(Boolean).length / 200)), excerpt: meta.excerpt || first.replace(/\*/g, '').slice(0, 220) };
+  return { meta, html, figs, mins: Math.max(1, Math.round(body.split(/\s+/).filter(Boolean).length / 200)), excerpt: meta.excerpt || first.replace(/\*/g, '').slice(0, 220) };
 }
 const fmtDate = d => { const t = new Date(d + 'T00:00:00'); return isNaN(t) ? '' : t.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); };
 let WR = [], wi = 0, wTimer = 0, wHover = false, wVis = false, wTouchUntil = 0;
@@ -480,8 +500,12 @@ new IntersectionObserver(es => es.forEach(e => { wVis = e.isIntersecting; })).ob
 let ri = 0, rOpen = false;
 function readerBuild(i) {
   ri = i; const w = WR[i], nx = WR[(i + 1) % WR.length];
-  rwrap.innerHTML = `<article class="rart"><header class="rhead"><span class="rtag">${esc(w.meta.tag || 'Writing')}</span><h2 class="rtitle">${esc(w.meta.title || w.slug)}</h2><p class="rmeta">${fmtDate(w.meta.date)} · ${w.mins} min read</p></header>` +
-    `<div class="rbody">${w.html}</div></article><button class="rnext" type="button"><small>Next piece</small><b>${esc(nx.meta.title || nx.slug)}</b></button>`;
+  const cover = w.figs[0], rest = w.figs.slice(1);
+  const fig = f => `<figure class="rfig"><div class="rimg"><img src="${A(mid(f.src))}" alt="${esc(f.cap)}" loading="lazy" decoding="async"></div>${f.cap ? `<figcaption>${inl(f.cap)}</figcaption>` : ''}</figure>`;
+  rwrap.innerHTML = `<article class="rart"><div class="lab"><b>+</b>Writing<span class="cnt">${fmtDate(w.meta.date)}</span></div>` +
+    `<div class="rgrid${cover ? ' hc' : ''}"><header class="rhead"><span class="rtag">${esc(w.meta.tag || 'Writing')}</span><h2 class="rtitle">${esc(w.meta.title || w.slug)}</h2><p class="rmeta">${fmtDate(w.meta.date)} · ${w.mins} min read</p></header>` +
+    (cover ? `<div class="rcover">${fig(cover)}</div>` : '') + `<div class="rbody">${w.html}</div>` + (rest.length ? `<div class="rfigs">${rest.map(fig).join('')}</div>` : '') +
+    `</div></article><button class="rnext" type="button"><small>Next piece</small><b>${esc(nx.meta.title || nx.slug)}</b></button>`;
   $('.rnext', rwrap).addEventListener('click', async () => {
     reader.classList.remove('show'); await wait(520); reader.scrollTop = 0; readerBuild((i + 1) % WR.length); void reader.offsetWidth; reader.classList.add('show');
   });
@@ -573,7 +597,7 @@ swipe($('#lb'), () => lbShow(lbI - 1), () => lbShow(lbI + 1));
 lb.addEventListener('click', e => { if (e.target === lb || e.target.classList.contains('lbstage')) lbClose(); });
 
 /* ------------------------------------------------ detail: tight mosaic, falling in like water */
-let state = { open: null }, busy = false, raf = 0, st = 0, upd = null, io = null;
+let state = { open: null }, busy = false, raf = 0, st = 0, upd = null, io = null, dsd = null;
 
 function titleHTML(t) {
   let k = 0;
@@ -603,7 +627,8 @@ function buildMosaic(p) {
       for (let j = 0; j < cnt; j++, at++) {
         const it = chunk[at], gi = b + at;
         const fig = h('figure', 'fig mt');
-        fig.style.flexGrow = ((1 / ratio(it.src)) * W[k % W.length]).toFixed(3); k++;
+        const tr = Math.max(.6, ratio(it.src) / 1.22);                    // a little taller than the photo itself: bigger tiles, only the sides trimmed
+        fig.style.flex = '0 0 auto'; fig.style.aspectRatio = tr.toFixed(3); fig.dataset.r = tr.toFixed(3); k++;      // tile height follows the photo's own proportion, so little of it is cropped
         fig.innerHTML = `<div class="m"><img src="${A(mid(it.src))}" alt="${it.cap || ''}" loading="lazy" decoding="async"></div><figcaption><b>${pad(gi + 1)}</b>${it.cap ? '<span>' + it.cap + '</span>' : ''}</figcaption>`;
         fig.addEventListener('click', () => lbOpen(imgs, gi));
         col.append(fig);
@@ -616,20 +641,46 @@ function buildMosaic(p) {
   return root;
 }
 
+// each block is as tall as its fullest column needs at the photos' natural proportions, so the tiles show almost the whole picture
+function fitMosaic(root) {
+  if (!root) return;
+  $$('.mblock', root).forEach(b => {
+    let hmax = 0;
+    $$('.mcol', b).forEach(col => {
+      const figs = $$('.fig', col), w = col.clientWidth, gap = parseFloat(getComputedStyle(col).rowGap) || 0;
+      hmax = Math.max(hmax, figs.reduce((s, f) => s + w / (+f.dataset.r || 1.5), 0) + gap * (figs.length - 1));
+    });
+    if (hmax) b.style.height = Math.round(hmax) + 'px';
+  });
+}
+addEventListener('resize', () => { if (state.open != null) fitMosaic($('.mosaic', wrap)); });
+
 function buildDetail(idx) {
   const p = P[idx];
   if (io) io.disconnect();
   wrap.innerHTML = ''; upd = null;
-  const head = h('section', 'dhead', `<div class="hbg" style="background-image:url(${A(p.cover)})"></div><div class="hin"><span class="hnum">${p.n} / ${pad(P.length)} · Photography</span><h2 class="htitle">${titleHTML(p.title)}</h2><span class="hsub">${p.sub}</span><p class="hmeta">${p.year} · ${imgsOf(p).length} photographs</p><p class="hblurb">${p.blurb}</p></div><div class="dscrollhint"><span></span>Scroll</div>`);
+  const imgs = imgsOf(p);
+  // the top of the page follows the home page: the name in big teal letters, the cover photo under it, the facts bottom-left and the scroll line
+  const head = h('section', 'dhead', `<h2 class="htitle">${titleHTML(p.title)}</h2><figure class="dph"><img src="${A(p.cover)}" alt="" decoding="async"><span class="tint"></span></figure>` +
+    `<div class="dfoot"><span class="hnum">${p.n} / ${pad(P.length)} · Photography</span><p class="hmeta">${esc(p.sub || p.year)} · ${imgs.length} photographs</p><span class="sdown idle" aria-hidden="true"><span class="sline"><i></i></span></span></div>`);
+  dsd = $('.sdown', head);
+  // then the same split as the About section: the facts and the text on the left, two tall photos on the right
+  const facts = [['Project', `${p.n} / ${pad(P.length)}`], ['Date', p.sub || p.year], ['Year', p.year], ['Photographs', imgs.length]].filter(f => f[1]);
+  const tall = imgs.map((it, i) => ({ it, i })).sort((a, b) => ratio(a.it.src) - ratio(b.it.src)).slice(0, 2).sort((a, b) => a.i - b.i);
+  const tiles = tall.map(({ it, i }) => `<figure class="atile" data-i="${i}"><div class="tile at"><img src="${A(mid(it.src))}" alt="${esc(it.cap || '')}" loading="lazy" decoding="async"></div><figcaption class="tcap"><b>${pad(i + 1)}</b>${it.cap ? '<span>' + esc(it.cap) + '</span>' : ''}</figcaption></figure>`).join('');
+  const intro = h('section', 'sec dintro', `<div class="lab"><b>+</b>The project</div><div class="ag"><div class="al"><dl class="dmeta">${facts.map(f => `<div><dt>${f[0]}</dt><dd>${esc(String(f[1]))}</dd></div>`).join('')}</dl><p class="para dpara">${esc(p.blurb || '')}</p></div><div class="ar">${tiles}</div></div>`);
+  $$('.atile', intro).forEach(t => t.addEventListener('click', () => lbOpen(imgs, +t.dataset.i)));
+  const gal = h('section', 'sec dgal', `<div class="lab"><b>+</b>Gallery<span class="cnt">${pad(imgs.length)}</span></div>`);
   const body = buildMosaic(p);
   const nx = P[(idx + 1) % P.length];
   const next = h('button', 'dnext', `<small>Next project · ${nx.n}</small><b>${nx.title} <span style="color:var(--acc)">${nx.sub}</span></b>`);
   next.type = 'button'; next.addEventListener('click', goNext);
-  wrap.append(head, body, next);
+  wrap.append(head, intro, gal, body, next);
+  fitMosaic(body);
   io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); }), { root: detail, threshold: .08, rootMargin: '0px 0px -4% 0px' });
   $$('.fig', wrap).forEach(x => io.observe(x));
-  const hb = $('.hbg', head);
-  upd = s => { hb.style.transform = `translateY(${(s * .3).toFixed(1)}px) scale(${1 + Math.min(s / 3000, .12)})`; };
+  const hb = $('.dph img', head);
+  upd = s => { hb.style.transform = `translateY(${(s * .12).toFixed(1)}px) scale(${(1.06 + Math.min(s / 4000, .08)).toFixed(3)})`; };
 }
 
 function loop() {
@@ -638,6 +689,9 @@ function loop() {
   upd && upd(st);
   const max = detail.scrollHeight - VH();
   prog.style.transform = `scaleX(${max > 0 ? clamp(t / max, 0, 1) : 0})`;
+  if (dsd) {                                                   // the line under the title fills as you go down, like on the home page
+    $('.sline', dsd).style.setProperty('--p', clamp(t / (VH() * .85), 0, 1).toFixed(3)); dsd.classList.toggle('idle', t < 8);
+  }
   raf = requestAnimationFrame(loop);
 }
 

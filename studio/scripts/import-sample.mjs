@@ -9,6 +9,7 @@ import {getCliClient} from 'sanity/cli'
 
 const client = getCliClient({apiVersion: '2025-01-01'})
 const SITE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
+const ONLY = process.env.ONLY || ''                             // for example:  ONLY=writing npm run import   (projects, videos, writing or settings)
 const key = () => Math.random().toString(36).slice(2, 12)
 
 // data.js and manifest.js assign to window.*, so run them in a small sandbox
@@ -48,16 +49,19 @@ function spans(text) {
   if (last < text.length) children.push({_type: 'span', _key: key(), text: text.slice(last), marks: []})
   return children.length ? children : [{_type: 'span', _key: key(), text: '', marks: []}]
 }
-function parseWriting(md) {
+async function parseWriting(md) {
   const m = md.replace(/\r/g, '').match(/^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/)
   const meta = {}
   m[1].split('\n').forEach((l) => { const i = l.indexOf(':'); if (i > 0) meta[l.slice(0, i).trim()] = l.slice(i + 1).trim() })
-  const body = m[2].trim().split(/\n\s*\n/).map((b) => b.trim()).filter(Boolean).filter((b) => !/^!\[/.test(b)).map((b) => {
+  const body = []
+  for (const b of m[2].trim().split(/\n\s*\n/).map((x) => x.trim()).filter(Boolean)) {
+    const img = b.match(/^!\[(.*?)\]\((.+?)\)$/)
+    if (img) { body.push({...(await upload(img[2])), _key: key(), caption: img[1]}); continue }       // a photo written inside the text
     let style = 'normal', text = b.replace(/\n/g, ' ')
     if (b.startsWith('>')) { style = 'blockquote'; text = b.replace(/^>\s?/gm, '').replace(/\n/g, ' ') }
     else if (b.startsWith('## ')) { style = 'h2'; text = b.slice(3) }
-    return {_type: 'block', _key: key(), style, markDefs: [], children: spans(text)}
-  })
+    body.push({_type: 'block', _key: key(), style, markDefs: [], children: spans(text)})
+  }
   return {meta, body}
 }
 
@@ -71,7 +75,7 @@ async function main() {
   console.log(`Importing into project ${client.config().projectId}, dataset ${client.config().dataset}`)
 
   // projects
-  for (const p of PROJECTS) {
+  for (const p of ONLY && ONLY !== 'projects' ? [] : PROJECTS) {
     console.log('Project:', p.title, p.sub)
     const photos = await pool(p.items.filter((i) => i.t === 'img'), 4, async (it) => ({
       _type: 'photo', _key: key(), image: await upload(it.src), caption: it.cap || '',
@@ -84,7 +88,7 @@ async function main() {
 
   // videos
   // videos have no date in the sample: they are created last-to-first so the newest-created one (the first in the list) comes first on the site
-  for (const v of [...VIDEOS].reverse()) {
+  for (const v of ONLY && ONLY !== 'videos' ? [] : [...VIDEOS].reverse()) {
     console.log('Video:', v.title)
     await client.delete(`video-${v.id.replace(/[^\w-]/g, '')}`).catch(() => {})
     await new Promise((r) => setTimeout(r, 1100))
@@ -93,13 +97,15 @@ async function main() {
 
   // writing
   const dir = path.join(SITE, 'assets', 'writings')
-  for (const slug of JSON.parse(fs.readFileSync(path.join(dir, 'index.json'), 'utf8'))) {
-    const {meta, body} = parseWriting(fs.readFileSync(path.join(dir, `${slug}.md`), 'utf8'))
+  for (const slug of ONLY && ONLY !== 'writing' ? [] : JSON.parse(fs.readFileSync(path.join(dir, 'index.json'), 'utf8'))) {
+    const {meta, body} = await parseWriting(fs.readFileSync(path.join(dir, `${slug}.md`), 'utf8'))
     console.log('Writing:', meta.title)
-    await client.createOrReplace({_id: `writing-${slug}`, _type: 'writing', title: meta.title, date: meta.date, tag: meta.tag || '', excerpt: meta.excerpt || '', body})
+    await client.createOrReplace({_id: `writing-${slug}`, _type: 'writing', title: meta.title, date: meta.date, tag: meta.tag || '', excerpt: meta.excerpt || '', body,
+      ...(meta.cover ? {cover: {...(await upload(meta.cover)), caption: meta.coverCaption || ''}} : {})})
   }
 
   // site texts (the ones written in index.html)
+  if (ONLY && ONLY !== 'settings') { console.log('Done.'); return }
   console.log('Site texts')
   await client.createOrReplace({
     _id: 'siteSettings', _type: 'siteSettings',
